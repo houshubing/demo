@@ -1,10 +1,12 @@
 from math import ceil
 
-from django.core.cache import cache
+
 from django.shortcuts import render, redirect
 from post.models import Post
+from post.helper import page_cache
 
 
+@page_cache(10)
 def post_list(request):
     page = int(request.GET.get('page', 1))  #页码
     per_page = 10                           #每页文章数
@@ -35,9 +37,6 @@ def edit_post(request):
         post.content = request.POST.get('content')
         post.save()
 
-        key = 'Post-%s' % post_id
-        cache.set(key, post)
-        print('重新缓存')
         return redirect('/post/read/?post_id=%s' % post.id)
     else:
         post_id = int(request.GET.get('post_id'))
@@ -45,15 +44,10 @@ def edit_post(request):
         return render(request, 'edit_post.html', {'post': post})
 
 
+@page_cache(10)
 def read_post(request):
     post_id = int(request.GET.get('post_id'))
-    key = 'Post-%s' % post_id
-    post = cache.get(key) #先从缓存获取
-    if post is None:
-        print('缓存没有')
-        post = Post.objects.get(id=post_id) #缓存未取到，从数据库去
-        print('缓存数据')
-        cache.set(key, post)# 把数据存到缓存
+    post = Post.objects.get(id=post_id)
     return render(request, 'read_post.html', {'post': post})
 
 
