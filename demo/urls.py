@@ -21,6 +21,7 @@ from post import views as post_views
 from user import views as user_views
 
 urlpatterns = [
+    url(r'^$',post_views.post_list),
     url(r'^post/list/', post_views.post_list),
     url(r'^post/create/', post_views.create_post),
     url(r'^post/edit/', post_views.edit_post),
@@ -31,6 +32,9 @@ urlpatterns = [
     url(r'^user/login/', user_views.login),
     url(r'^user/logout/', user_views.logout),
     url(r'^user/info/', user_views.info),
+
+    url(r'^weibo/callback/', user_views.wb_callback),
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
