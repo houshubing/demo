@@ -42,10 +42,11 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.security.SecurityMiddleware',       # | process_request    process_response ^
+    'django.contrib.sessions.middleware.SessionMiddleware',# | process_request    process_response |
+    'django.middleware.common.CommonMiddleware',           # | process_request    process_response |
+    'django.middleware.csrf.CsrfViewMiddleware',           # v process_request    process_response |
+    'common.middleware.BlockMiddleware',
 ]
 
 ROOT_URLCONF = 'demo.urls'
@@ -59,8 +60,6 @@ TEMPLATES = [
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
             ],
         },
     },
@@ -68,6 +67,30 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'demo.wsgi.application'
 
+REDIS = {
+    'host': 'localhost',
+    'port': 6379,
+    'db': 4,
+}
+
+# Cache
+# Django 默认缓存配置
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'
+#     }
+# }
+# 使用 Redis 做缓存
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/4",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PICKLE_VERSION": -1,
+        }
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
@@ -79,6 +102,8 @@ DATABASES = {
     }
 }
 
+# Session缓存在redis上
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
