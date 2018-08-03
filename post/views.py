@@ -2,8 +2,11 @@ from math import ceil
 
 
 from django.shortcuts import render, redirect
+
 from post.models import Post
 from post.helper import page_cache
+from post.helper import read_count
+from post.helper import get_top_n
 
 
 @page_cache(10)
@@ -44,6 +47,7 @@ def edit_post(request):
         return render(request, 'edit_post.html', {'post': post})
 
 
+@read_count
 @page_cache(10)
 def read_post(request):
     post_id = int(request.GET.get('post_id'))
@@ -55,3 +59,13 @@ def search(request):
     keyword = request.POST.get('keyword')
     posts = Post.objects.filter(content__contains=keyword)
     return render(request, 'search.html', {'posts': posts})
+
+
+def top10(request):
+    '''
+    1. aaaa 30
+    2. bbbb 27
+    3. cccc 19
+    '''
+    rank_data = get_top_n(10)
+    return render(request, 'top10.html', {'rank_data': rank_data})
