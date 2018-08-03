@@ -1,6 +1,4 @@
 from math import ceil
-
-
 from django.shortcuts import render, redirect
 
 from post.models import Post
@@ -45,6 +43,7 @@ def edit_post(request):
         post_id = int(request.GET.get('post_id'))
         post = Post.objects.get(id=post_id)
         return render(request, 'edit_post.html', {'post': post})
+
 
 
 @read_count

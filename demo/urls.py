@@ -28,7 +28,7 @@ urlpatterns = [
     url(r'^post/read/', post_views.read_post),
     url(r'^post/search/', post_views.search),
     url(r'^post/top10/', post_views.top10),
-
+  
     url(r'^user/register/', user_views.register),
     url(r'^user/login/', user_views.login),
     url(r'^user/logout/', user_views.logout),
