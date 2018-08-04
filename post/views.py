@@ -26,6 +26,7 @@ def post_list(request):
 
 
 @login_required
+@require_perm('add_post')
 def create_post(request):
     if request.method == 'POST':
         uid = request.session['uid']
@@ -38,7 +39,6 @@ def create_post(request):
 
 
 @login_required
-@require_perm('user')
 def edit_post(request):
     if request.method == 'POST':
         post_id = int(request.POST.get('post_id'))
@@ -69,7 +69,7 @@ def read_post(request):
 
 
 @login_required
-@require_perm('manager')
+@require_perm('del_post')
 def del_post(request):
     post_id = int(request.GET.get('post_id'))
     Post.objects.get(id=post_id).delete()
@@ -94,12 +94,22 @@ def top10(request):
 
 
 @login_required
-@require_perm('user')
+@require_perm('add_comment')
 def comment(request):
     uid = request.session['uid']
     post_id = request.POST.get('post_id')
     content = request.POST.get('content')
     Comment.objects.create(uid=uid, post_id=post_id, content=content)
+    return redirect('/post/read/?post_id=%s' % post_id)
+
+
+@login_required
+@require_perm('del_comment')
+def del_comment(request):
+    comment_id = int(request.GET.get('comment_id'))
+    Comment.objects.get(id=comment_id).delete()
+
+    post_id = request.GET.get('post_id')
     return redirect('/post/read/?post_id=%s' % post_id)
 
 
