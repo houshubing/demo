@@ -1,13 +1,15 @@
 from math import ceil
 from django.shortcuts import render, redirect
 
+from common import rds
 from post.models import Post
 from post.models import Tag
+from post.models import Comment
 from post.helper import page_cache
 from post.helper import read_count
 from post.helper import get_top_n
 from user.helper import login_required
-from post.models import Comment
+from user.helper import require_perm
 
 
 @page_cache(10)
@@ -36,6 +38,7 @@ def create_post(request):
 
 
 @login_required
+@require_perm('user')
 def edit_post(request):
     if request.method == 'POST':
         post_id = int(request.POST.get('post_id'))
@@ -65,6 +68,15 @@ def read_post(request):
     return render(request, 'read_post.html', {'post': post})
 
 
+@login_required
+@require_perm('manager')
+def del_post(request):
+    post_id = int(request.GET.get('post_id'))
+    Post.objects.get(id=post_id).delete()
+    rds.zrem('ReadRank', post_id)
+    return redirect('/')
+
+
 def search(request):
     keyword = request.POST.get('keyword')
     posts = Post.objects.filter(content__contains=keyword)
@@ -82,6 +94,7 @@ def top10(request):
 
 
 @login_required
+@require_perm('user')
 def comment(request):
     uid = request.session['uid']
     post_id = request.POST.get('post_id')
