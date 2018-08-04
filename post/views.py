@@ -6,6 +6,7 @@ from post.helper import page_cache
 from post.helper import read_count
 from post.helper import get_top_n
 from user.helper import login_required
+from post.models import Comment
 
 
 @page_cache(10)
@@ -71,3 +72,12 @@ def top10(request):
     '''
     rank_data = get_top_n(10)
     return render(request, 'top10.html', {'rank_data': rank_data})
+
+
+@login_required
+def comment(request):
+    uid = request.session['uid']
+    post_id = request.POST.get('post_id')
+    content = request.POST.get('content')
+    Comment.objects.create(uid=uid, post_id=post_id, content=content)
+    return redirect('/post/read/?post_id=%s' % post_id)
