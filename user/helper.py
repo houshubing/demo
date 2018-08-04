@@ -1,5 +1,6 @@
 import requests
 from django.conf import settings
+from django.shortcuts import redirect
 
 
 def get_wb_access_token(code):
@@ -23,3 +24,12 @@ def get_wb_user_show(access_token, uid):
         return result
     else:
         return {'error': 'weibo server error'}
+
+
+def login_required(view_func):
+    def wrapper(request):
+        if request.session.get('uid') is None:
+            return redirect('/user/login/')
+        else:
+            return view_func(request)
+    return wrapper
