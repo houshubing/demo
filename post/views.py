@@ -20,16 +20,18 @@ def post_list(request):
     posts = Post.objects.all().order_by('-id')[start:end]   #惰性加载（懒加载）
     return render(request, 'post_list.html',{'posts':posts, 'pages': range(pages)})
 
+
 @login_required
 def create_post(request):
     if request.method == 'POST':
         uid = request.session['uid']
         title = request.POST.get("title")
         content = request.POST.get("content")
-        post = Post.objects.create(title=title, content=content)
+        post = Post.objects.create(uid=uid, title=title, content=content)
         return  redirect('/post/read/?post_id=%s' % post.id)
     else:
         return render(request, 'create_post.html')
+
 
 @login_required
 def edit_post(request):
@@ -45,7 +47,6 @@ def edit_post(request):
         post_id = int(request.GET.get('post_id'))
         post = Post.objects.get(id=post_id)
         return render(request, 'edit_post.html', {'post': post})
-
 
 
 @read_count
