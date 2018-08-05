@@ -179,4 +179,58 @@ WB_ACCESS_TOKEN_ARGS = {
 WB_USER_SHOW_API = 'https://api.weibo.com/2/users/show.json'
 WB_USER_SHOW_ARGS = {'access_token': None, 'uid': None}
 
+# 日志配置
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'simple': {
+            'format': '%(asctime)s %(module)s.%(funcName)s: %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'verbose': {
+            'format': '%(asctime)s %(levelname)s [%(process)d-%(threadName)s] '
+                      '%(module)s.%(funcName)s line %(lineno)d: %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        }
+    },
 
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+        'inf': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': 'info.log',
+            'when': 'W0',  # 每周一切割日志
+            'backupCount': 5,
+            'formatter': 'simple',
+            'level': 'INFO',
+        },
+        'err': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': 'error.log',
+            'when': 'D',  # 每天切割日志
+            'backupCount': 30,
+            'formatter': 'verbose',
+            'level': 'WARNING',
+        }
+    },
+
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'inf': {
+            'handlers': ['inf'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'err': {
+            'handlers': ['err'],
+            'level': 'DEBUG',
+            'propagate': True,
+        }
+    }
+}
