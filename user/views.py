@@ -6,6 +6,7 @@ from user.models import User
 from user.forms import RegisterForm
 from user.helper import get_wb_access_token
 from user.helper import get_wb_user_show
+from user.helper import login_required
 
 
 def register(request):
@@ -53,8 +54,8 @@ def logout(request):
 
     return redirect('/user/login/')
 
-
-def info(request):
+@login_required
+def user_info(request):
     uid = request.session.get('uid')
     user = User.objects.get(id=uid)
     return render(request, 'user_info.html', {'user': user})
