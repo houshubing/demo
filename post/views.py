@@ -1,6 +1,7 @@
 from math import ceil
 from django.shortcuts import render, redirect
 
+
 from common import rds
 from post.models import Post
 from post.models import Tag
@@ -10,6 +11,8 @@ from post.helper import read_count
 from post.helper import get_top_n
 from user.helper import login_required
 from user.helper import require_perm
+
+
 
 
 @page_cache(10)
@@ -46,6 +49,7 @@ def edit_post(request):
         post.title = request.POST.get('title')
         post.content = request.POST.get('content')
         post.save()
+
         str_tags = request.POST.get('tags')
         # TODO:数据清洗
         tag_names = [x.strip()
@@ -59,7 +63,7 @@ def edit_post(request):
         str_tags =', '.join(t.name for t in post.tags())
         return render(request, 'edit_post.html', {'post': post, 'tags': str_tags})
 
-
+ 
 @read_count
 @page_cache(10)
 def read_post(request):
@@ -91,7 +95,7 @@ def top10(request):
     '''
     rank_data = get_top_n(10)
     return render(request, 'top10.html', {'rank_data': rank_data})
-
+  
 
 @login_required
 @require_perm('add_comment')
